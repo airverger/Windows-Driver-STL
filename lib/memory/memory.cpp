@@ -24,4 +24,9 @@ namespace krnl_std
         return free(p);
     }
 
+    void MemCopy(void* dst, void* src, size_t len)
+    {
+        memcpy(dst, src, len);
+    }
+
 }

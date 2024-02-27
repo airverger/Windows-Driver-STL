@@ -28,6 +28,10 @@ namespace krnl_std
         ~String();
 
         String<T>& operator+=(const String<T>&);
+        
+        size_t Resize(size_t size);
+
+        bool Append();
 
         size_t GetSize() const;
         size_t GetMaxSize() const;
@@ -40,9 +44,10 @@ namespace krnl_std
         bool IsPrefixOf(const String<T>&);
         
     private:
-        void allocate(size_t size);
-        void deallocate();
-        void copy(T* src, size_t size);
+        void AllocateAndCopyOldData(size_t size);
+        void Allocate(size_t size);
+        void Deallocate();
+        void Copy(T* src, size_t pos, size_t size);
     };
 
 }

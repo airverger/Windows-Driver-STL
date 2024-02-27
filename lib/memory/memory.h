@@ -11,4 +11,7 @@ namespace krnl_std
     void* krnl_alloc(size_t n);
 
     void krnl_free(void* p);
+
+    void MemCopy(void* dst, void* src, size_t len);
+
 }

@@ -14,13 +14,13 @@ namespace krnl_std
         {
             size++;
         }
-        copy((char*)buffer, size);
+        Copy((char*)buffer, 0, size);
     }
 
     template<>
     String<char>::String(const String<char>& str)
     {
-        copy(str.buffer_, str.max_size_);
+        Copy(str.buffer_, 0, str.max_size_);
         cur_size_ = str.cur_size_;
     }
 
@@ -32,7 +32,7 @@ namespace krnl_std
         {
             size++;
         }
-        copy((char*)buffer, size);
+        Copy((char*)buffer, 0, size);
         return *this;
     }
 
@@ -41,7 +41,7 @@ namespace krnl_std
     {
         if (this != &rhs)
         {
-            copy(rhs.buffer_, rhs.max_size_);
+            Copy(rhs.buffer_, 0, rhs.max_size_);
             this->cur_size_ = rhs.cur_size_;
         }
         return *this;
@@ -61,7 +61,7 @@ namespace krnl_std
     template<>
     String<char>::~String()
     {
-        deallocate();
+        Deallocate();
         return;
     }
 
@@ -87,13 +87,13 @@ namespace krnl_std
         {
             size++;
         }
-        copy((wchar_t*)buffer, size);
+        Copy((wchar_t*)buffer, 0, size);
     }
 
     template<>
     String<wchar_t>::String(const String<wchar_t>& str)
     {
-        copy(str.buffer_, str.max_size_);
+        Copy(str.buffer_, 0, str.max_size_);
         cur_size_ = str.cur_size_;
     }
 
@@ -105,7 +105,7 @@ namespace krnl_std
         {
             size++;
         }
-        copy((wchar_t*)buffer, size);
+        Copy((wchar_t*)buffer, 0, size);
         return *this;
     }
 
@@ -114,7 +114,7 @@ namespace krnl_std
     {
         if (this != &rhs)
         {
-            copy(rhs.buffer_, rhs.max_size_);
+            Copy(rhs.buffer_, 0, rhs.max_size_);
             this->cur_size_ = rhs.cur_size_;
         }
         return *this;
@@ -136,7 +136,7 @@ namespace krnl_std
     template<>
     String<wchar_t>::~String()
     {
-        deallocate();
+        Deallocate();
         return;
     }
 
@@ -176,9 +176,16 @@ namespace krnl_std
     }
 
     template<typename T>
-    String<T>& String<T>::operator+=(const String<T>&)
+    String<T>& String<T>::operator+=(const String<T>& str)
     {
-        return String();
+        size_t total_size = cur_size_ + str.cur_size_;
+        size_t pos = cur_size_;
+        if (this->Resize(total_size) == nullptr)
+        {
+            return *this;
+        }
+        Copy(str.buffer_, pos, str.cur_size_);
+        return *this;
     }
 
     template<typename T>
@@ -190,8 +197,19 @@ namespace krnl_std
     template<typename T>
     String<T>::~String()
     {
-        deallocate();
+        Deallocate();
         return;
+    }
+
+    template<typename T>
+    size_t String<T>::Resize(size_t size)
+    {
+        AllocateAndCopyOldData(size);
+        if (buffer_ == nullptr)
+        {
+            return 0;
+        }
+        return size;
     }
 
     template<typename T>
@@ -240,22 +258,47 @@ namespace krnl_std
         return true;
     }
 
+    template<typename T>
+    void String<T>::AllocateAndCopyOldData(size_t size)
+    {
+        size_t cur_size = 0;
+        size_t copy_size = 0;
+        
+        T* buffer = (T*)krnl_std::krnl_alloc(size * sizeof(T));
 
+        copy_size = size > cur_size_ ? cur_size_ : size;
+        MemCopy(buffer, buffer_, copy_size * sizeof(T));
+
+        if (buffer_ != nullptr)
+        {
+            Deallocate();
+        }
+        if (buffer != nullptr)
+        {
+            buffer_ = buffer;
+            max_size_ = size;
+            cur_size_ = cur_size;
+        }
+        return;
     }
 
     template<typename T>
-    void String<T>::allocate(size_t size)
+    void String<T>::Allocate(size_t size)
     {
         if (buffer_ != nullptr)
         {
-            deallocate();
+            Deallocate();
         }
         buffer_ = (T*)krnl_std::krnl_alloc(size * sizeof(T));
-        max_size_ = size;
+        if (buffer_ != nullptr)
+        {
+            max_size_ = size;
+        }
+        return;
     }
 
     template<typename T>
-    void String<T>::deallocate()
+    void String<T>::Deallocate()
     {
         krnl_free((void*)buffer_);
         buffer_ = nullptr;
@@ -264,17 +307,21 @@ namespace krnl_std
     }
 
     template<typename T>
-    void String<T>::copy(T* src, size_t size)
+    void String<T>::Copy(T* src, size_t pos, size_t size)
     {
-        if (size > max_size_)
+        if (pos < 0 || pos > cur_size_)
         {
-            allocate(size);
+            return;
+        }
+        if (pos + size > max_size_)
+        {
+            AllocateAndCopyOldData(pos + size);
         }
         if (buffer_ == nullptr)
         {
             return;
         }
-        memcpy(buffer_, src, size * sizeof(T));
+        MemCopy(buffer_ + pos * sizeof(T), src, size * sizeof(T));
         cur_size_ = size;
     }
 }
