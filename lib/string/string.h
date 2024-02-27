@@ -3,8 +3,6 @@
 
 #include "memory/memory.h"
 
-#include <iostream>
-
 namespace krnl_std
 {
     template <typename T>
@@ -31,7 +29,7 @@ namespace krnl_std
         
         size_t Resize(size_t size);
 
-        bool Append();
+        bool Append(const String<T>& str);
 
         size_t GetSize() const;
         size_t GetMaxSize() const;
@@ -39,11 +37,28 @@ namespace krnl_std
 
         bool IsEmpty() const;
 
-        const T* GetData();
+        const T* GetData() const;
 
         bool IsPrefixOf(const String<T>&);
-        
+        bool IsSuffixOf(const String<T>&);
+
     private:
+
+        size_t PrvResize(size_t size);
+
+        bool PrvAppend(const String<T>& str);
+
+        size_t PrvGetSize() const;
+        size_t PrvGetMaxSize() const;
+        size_t PrvGetCapacity() const;
+
+        bool PrvIsEmpty() const;
+
+        const T* PrvGetData() const;
+
+        bool PrvIsPrefixOf(const String<T>&);
+        bool PrvIsSuffixOf(const String<T>&);
+
         void AllocateAndCopyOldData(size_t size);
         void Allocate(size_t size);
         void Deallocate();
