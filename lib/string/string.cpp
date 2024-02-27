@@ -71,6 +71,7 @@ namespace krnl_std
         return (const char*)buffer_;
     }
 
+
 }
 
 // This part for unicode string
@@ -175,6 +176,12 @@ namespace krnl_std
     }
 
     template<typename T>
+    String<T>& String<T>::operator+=(const String<T>&)
+    {
+        return String();
+    }
+
+    template<typename T>
     T& String<T>::operator[](size_t index)
     {
         return 0;
@@ -188,9 +195,52 @@ namespace krnl_std
     }
 
     template<typename T>
+    size_t String<T>::GetSize()
+    {
+        return cur_size_;
+    }
+
+    template<typename T>
+    size_t String<T>::GetMaxSize()
+    {
+        return max_size_;
+    }
+
+    template<typename T>
+    size_t String<T>::GetCapacity()
+    {
+        return max_size_*sizeof(T);
+    }
+
+
+    template<typename T>
     const T* String<T>::GetData()
     {
         return buffer_;
+    }
+
+    template<typename T>
+    bool String<T>::IsPrefixOf(const String<T>& str)
+    {
+        // Check if length of first string (str1) is less than or equal to second string (str2)
+        if (cur_size_ > str.cur_size_)
+        {
+            return false;
+        }
+        
+        for (size_t i = 0; i < cur_size_; ++i) 
+        {
+            if (buffer_[i] != str[i])
+            {
+                return false;
+            }
+        }
+    
+        // If we reach here without returning false, it means all characters matched and str1 is a prefix of str2
+        return true;
+    }
+
+
     }
 
     template<typename T>

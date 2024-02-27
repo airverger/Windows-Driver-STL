@@ -27,8 +27,18 @@ namespace krnl_std
 
         ~String();
 
+        String<T>& operator+=(const String<T>&);
+
+        size_t GetSize() const;
+        size_t GetMaxSize() const;
+        size_t GetCapacity() const;
+
+        bool IsEmpty() const;
+
         const T* GetData();
 
+        bool IsPrefixOf(const String<T>&);
+        
     private:
         void allocate(size_t size);
         void deallocate();
