@@ -213,6 +213,13 @@ namespace krnl_std
     }
 
     template<typename T>
+    bool String<T>:: Append(const String<T>& str)
+    {
+        return Copy(str.buffer_, this->cur_size_, str.cur_size_);
+    }
+
+
+    template<typename T>
     size_t String<T>::GetSize()
     {
         return cur_size_;
@@ -307,7 +314,7 @@ namespace krnl_std
     }
 
     template<typename T>
-    void String<T>::Copy(T* src, size_t pos, size_t size)
+    bool String<T>::Copy(T* src, size_t pos, size_t size)
     {
         if (pos < 0 || pos > cur_size_)
         {
@@ -319,9 +326,10 @@ namespace krnl_std
         }
         if (buffer_ == nullptr)
         {
-            return;
+            return false;
         }
         MemCopy(buffer_ + pos * sizeof(T), src, size * sizeof(T));
         cur_size_ = size;
+        return true;
     }
 }

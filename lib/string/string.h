@@ -47,7 +47,7 @@ namespace krnl_std
         void AllocateAndCopyOldData(size_t size);
         void Allocate(size_t size);
         void Deallocate();
-        void Copy(T* src, size_t pos, size_t size);
+        bool Copy(T* src, size_t pos, size_t size);
     };
 
 }
