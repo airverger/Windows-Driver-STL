@@ -7,24 +7,27 @@ struct out_of_range
 
 };
 
-template<class T> class Vector
+template<class T> class String
 {
 public:
 	/* ----- Constructors ----- */
 
 	// Default constructor
-	Vector();
+	String();
 
-	explicit Vector(size_t s);
+	explicit String(size_t size);
 
 	// Copy constructor
-	Vector(const Vector& arg);
+	explicit String(const String&);
+	explicit String(const T*);
 
 	// Copy Assingment
-	Vector<T>& operator=(const Vector<T>& arg);
+	String<T>& operator=(const String<T>&);
+
+	String<T>& operator=(const T*);
 
 	// Destructor
-	~Vector();
+	~String();
 
 	/*----------------------------*/
 
@@ -65,15 +68,15 @@ public:
 	// reserve() will never decrase the capacity.
 	void Reserve(size_t new_size);
 
-	// Changes the Vector's size.
+	// Changes the String's size.
 	// If the newsize is smaller, the last elements will be lost.
 	// Has a default value param for custom values when resizing.
 	void Resize(size_t new_size, T val = T());
 
-	// Returns the size of the Vector (number of elements). 
+	// Returns the size of the String (number of elements). 
 	size_t Size() const;
 
-	// Returns the maximum number of elements the Vector can hold
+	// Returns the maximum number of elements the String can hold
 	size_t MaxSize() const;
 
 	// Reduces capcity to fit the size
@@ -87,24 +90,27 @@ public:
 
 	/* -------- MODIFIERS --------*/
 
-	// Removes all elements from the Vector
+	// Removes all elements from the String
 	// Capacity is not changed.
 	void Clear();
 
 	// Inserts element at the back
 	void PushBack(const T& d);
 
-	// Removes the last element from the Vector
+	// Removes the last element from the String
 	void PopBack();
 
-	// Append a vector to the back.
-	void Append(const Vector<T>& v);
+	// Append a String to the back.
+	void Append(const String<T>& v);
 
-	// Add a vector to the back.
-	Vector<T>& operator+=(const Vector<T>&);
+	// Add a String to the back.
+	String<T>& operator+=(const String<T>&);
 
-	// Combination of 2 vectors
-	Vector<T> operator+(const Vector<T>&);
+	// Add a C String to the back.
+	String<T>& operator+=(const T*);
+
+	// Combination of 2 Strings
+	String<T> operator+(const String<T>&);
 
 	/*----------------------------*/
 
@@ -117,7 +123,7 @@ public:
 	// Access elements with bounds checking
 	T& At(size_t n);
 
-	// Access elements with bounds checking for constant Vectors.
+	// Access elements with bounds checking for constant Strings.
 	const T& At(size_t n) const;
 
 	// Access elements, no bounds checking
@@ -138,32 +144,42 @@ public:
 	// Returns a reference to the last element
 	const T& Back() const;
 
-	// Returns a posize_ter to the array used by Vector
+	// Returns a posize_ter to the array used by String
 	T* Data();
 
-	// Returns a posize_ter to the array used by Vector
+	// Returns a posize_ter to the array used by String
 	const T* Data() const;
 
 	/*----------------------------*/
 
+
+
 	/* -------- COMPARISON -------*/
 
+	// Check if the string is a prefix of another string
+	bool IsPrefixOf(const String<T>&);
+
+	// Check if the string is a suffix of another string
+	bool IsSuffixOf(const String<T>&);
+
 	// Overloading the equal operator
-	bool operator==(const Vector<T>&);
+	bool operator==(const String<T>&);
+
+	// Overloading the equal operator
+	bool operator>(const String<T>&);
 
 	/*----------------------------*/
 
-
 private:
-	size_t	size_;		// Number of elements in Vector
-	T*		elements_;	// Posize_ter to first element of Vector
-	size_t	space_;		// Total space used by Vector including
+	size_t	size_;		// Number of elements in String
+	T*		elements_;	// Posize_ter to first element of String
+	size_t	space_;		// Total space used by String including
 						// elements and free space.
 };
 
 
 
-template<class T> class Vector<T>::iterator
+template<class T> class String<T>::iterator
 {
 public:
 	iterator(T* p)
@@ -205,14 +221,14 @@ private:
 
 // Constructors/Destructor
 template<class T>
-inline Vector<T>::Vector()
+inline String<T>::String()
 	:size_(0), elements_(0), space_(0)
 {}
 
 
 template<class T>
-inline Vector<T>::Vector(size_t s)
-	:size_(s), elements_(new T[s]), space_(s)
+inline String<T>::String(size_t size)
+	:size_(size), elements_(new T[size]), space_(size)
 {
 	for (size_t index = 0; index < size_; ++index)
 		elements_[index] = T();
@@ -220,7 +236,7 @@ inline Vector<T>::Vector(size_t s)
 
 
 template<class T>
-inline Vector<T>::Vector(const Vector & arg)
+inline String<T>::String(const String & arg)
 	:size_(arg.size_), elements_(new T[arg.size_])
 {
 	for (size_t index = 0; index < arg.size_; ++index)
@@ -228,35 +244,35 @@ inline Vector<T>::Vector(const Vector & arg)
 }
 
 template<class T>
-inline Vector<T>& Vector<T>::operator=(const Vector<T>& a)
+inline String<T>& String<T>::operator=(const String<T>& str)
 {
-	if (this == &a) return *this;	// Self-assingment not work needed
+	if (this == &str) return *this;	// Self-assingment not work needed
 
-									// Current Vector has enough space, so there is no need for new allocation
-	if (a.size_ <= space_)
+									// Current String has enough space, so there is no need for new allocation
+	if (str.size_ <= space_)
 	{
-		for (size_t index = 0; index < a.size_; ++index)
+		for (size_t index = 0; index < str.size_; ++index)
 		{
-			elements_[index] = a.elements_[index];
-			size_ = a.size_;
+			elements_[index] = str.elements_[index];
+			size_ = str.size_;
 			return *this;
 		}
 	}
 
-	T* p = new T[a.size_];
+	T* p = new T[str.size_];
 
-	for (size_t index = 0; index < a.size_; ++index)
-		p[index] = a.elements_[index];
+	for (size_t index = 0; index < str.size_; ++index)
+		p[index] = str.elements_[index];
 
 	delete[] elements_;
-	size_ = a.size_;
-	space_ = a.size_;
+	size_ = str.size_;
+	space_ = str.size_;
 	elements_ = p;
 	return *this;
 }
 
 template<class T>
-Vector<T>::~Vector()
+String<T>::~String()
 {
 	delete[] elements_;
 }
@@ -265,58 +281,58 @@ Vector<T>::~Vector()
 
 // Iterators
 template<class T>
-inline typename Vector<T>::iterator Vector<T>::Begin()
+inline typename String<T>::iterator String<T>::Begin()
 {	
-	return Vector<T>::iterator(&elements_[0]);
+	return String<T>::iterator(&elements_[0]);
 }
 
 template<class T>
-inline const Vector<T>::iterator Vector<T>::Begin() const
+inline const String<T>::iterator String<T>::Begin() const
 {
-	return Vector<T>::iterator(&elements_[0]);
+	return String<T>::iterator(&elements_[0]);
 }
 
 template<class T>
-inline Vector<T>::iterator Vector<T>::End()
+inline String<T>::iterator String<T>::End()
 {
-	return Vector<T>::iterator(&elements_[size_]);
+	return String<T>::iterator(&elements_[size_]);
 }
 
 template<class T>
-inline const Vector<T>::iterator Vector<T>::End() const
+inline const String<T>::iterator String<T>::End() const
 {
-	return Vector<T>::iterator(&elements_[size_]);
+	return String<T>::iterator(&elements_[size_]);
 }
 
 template<class T>
-inline const Vector<T>::iterator Vector<T>::ConstBegin() const
+inline const String<T>::iterator String<T>::ConstBegin() const
 {
-	return Vector<T>::iterator(&elements_[0]);
+	return String<T>::iterator(&elements_[0]);
 }
 
 template<class T>
-inline const Vector<T>::iterator Vector<T>::ConstEnd() const
+inline const String<T>::iterator String<T>::ConstEnd() const
 {
-	return Vector<T>::iterator(&elements_[size_]);
+	return String<T>::iterator(&elements_[size_]);
 }
 
 
 
 // Capacity
 template<class T>
-inline bool Vector<T>::Empty() const
+inline bool String<T>::Empty() const
 {
 	return (size_ == 0);
 }
 
 template<class T>
-inline size_t Vector<T>::Capacity() const
+inline size_t String<T>::Capacity() const
 {
 	return space_;
 }
 
 template<class T>
-inline void Vector<T>::Reserve(size_t new_size)
+inline void String<T>::Reserve(size_t new_size)
 {
 	if (new_size <= space_) return;
 
@@ -333,7 +349,7 @@ inline void Vector<T>::Reserve(size_t new_size)
 }
 
 template<class T>
-inline void Vector<T>::Resize(size_t new_size, T val)
+inline void String<T>::Resize(size_t new_size, T val)
 {
 	Reserve(new_size);
 
@@ -344,7 +360,7 @@ inline void Vector<T>::Resize(size_t new_size, T val)
 }
 
 template<class T>
-inline size_t Vector<T>::Size() const
+inline size_t String<T>::Size() const
 {
 	return size_;
 }
@@ -352,7 +368,7 @@ inline size_t Vector<T>::Size() const
 
 
 template<class T>
-inline void Vector<T>::Clear()
+inline void String<T>::Clear()
 {
 	for (size_t index = 0; index < size_; ++index)
 		elements_[index] = T();
@@ -362,53 +378,53 @@ inline void Vector<T>::Clear()
 
 // Modifiers
 template<class T>
-inline void Vector<T>::PushBack(const T& d)
+inline void String<T>::PushBack(const T& ele)
 {
 	if (space_ == 0)
 		Reserve(8);
 	else if (size_ == space_)
 		Reserve(2 * space_);
 
-	elements_[size_] = d;
+	elements_[size_] = ele;
 
 	++size_;
 }
 
 template<class T>
-inline void Vector<T>::Append(const Vector<T>& v)
+inline void String<T>::Append(const String<T>& str)
 {
 	Reserve(max(v.Size(), size_) * 2);
 
-	for (size_t index = 0; index < v.Size(); ++index)
-		elements_[index + size_] = v[index];
+	for (size_t index = 0; index < str.Size(); ++index)
+		elements_[index + size_] = str[index];
 
-	size_ += v.Size();
+	size_ += str.Size();
 
 }
 
 template<class T>
-inline Vector<T>& Vector<T>::operator+=(const Vector<T>& v)
+inline String<T>& String<T>::operator+=(const String<T>& str)
 {
-	Append(v);
+	Append(str);
 	return *this;
 }
 
 template<class T>
-inline Vector<T> Vector<T>::operator+(const Vector<T>& v)
+inline String<T> String<T>::operator+(const String<T>& str)
 {
 	// TODO: insert return statement here
-	Vector<T> res;
-	res.Reserve(max(v.Size(), size_) * 2);
-	res.Resize(v.Size() + size_);
+	String<T> res;
+	res.Reserve(max(str.Size(), size_) * 2);
+	res.Resize(str.Size() + size_);
 
 	for (size_t index = 0; index < size_; ++index)
 	{
 		res[index] = elements_[index];
 	}
 
-	for (size_t index = 0; index < v.Size(); ++index)
+	for (size_t index = 0; index < str.Size(); ++index)
 	{
-		res[index + size_] = v[index];
+		res[index + size_] = str[index];
 	}
 
 	return res;
@@ -418,83 +434,64 @@ inline Vector<T> Vector<T>::operator+(const Vector<T>& v)
 
 // Accessors
 template<class T>
-inline T & Vector<T>::At(size_t n)
+inline T & String<T>::At(size_t n)
 {
 	if (n < 0 || size_ <= n) throw out_of_range();
 	return elements_[n];
 }
 
 template<class T>
-inline const T & Vector<T>::At(size_t n) const
+inline const T & String<T>::At(size_t n) const
 {
 	if (n < 0 || size_ <= n) throw out_of_range();
 	return elements_[n];
 }
 
 template<class T>
-inline T & Vector<T>::operator[](size_t i)
+inline T & String<T>::operator[](size_t i)
 {
 	return elements_[i];
 }
 
 template<class T>
-inline const T & Vector<T>::operator[](size_t i) const
+inline const T & String<T>::operator[](size_t i) const
 {
 	return elements_[i];
 }
 
 template<class T>
-inline T& Vector<T>::Front()
+inline T& String<T>::Front()
 {
 	return elements_[0];
 }
 
 template<class T>
-inline const T& Vector<T>::Front() const
+inline const T& String<T>::Front() const
 {
 	return elements_[0];
 }
 
 template<class T>
-inline T& Vector<T>::Back()
+inline T& String<T>::Back()
 {
 	return elements_[size_ - 1];
 }
 
 template<class T>
-inline const T& Vector<T>::Back() const
+inline const T& String<T>::Back() const
 {
 	return elements_[size_ - 1];
 }
 
 template<class T>
-inline T* Vector<T>::Data()
+inline T* String<T>::Data()
 {
 	return elements_;
 }
 
 template<class T>
-inline const T* Vector<T>::Data() const
+inline const T* String<T>::Data() const
 {
 	return elements_;
-}
-
-template<class T>
-inline bool Vector<T>::operator==(const Vector<T>& v)
-{
-	if (size_ != v.Size())
-	{
-		return false;
-	}
-
-	for (int index = 0; index < size_; ++index)
-	{
-		if (elements_[index] != v[index])
-		{
-			return false;
-		}
-	}
-
-	return true;
 }
 
