@@ -220,37 +220,37 @@ inline Vector<T>::Vector(size_t s)
 
 
 template<class T>
-inline Vector<T>::Vector(const Vector & arg)
-	:size_(arg.size_), elements_(new T[arg.size_])
+inline Vector<T>::Vector(const Vector & v)
+	:size_(v.size_), elements_(new T[v.size_]), space_(v.size_)
 {
-	for (size_t index = 0; index < arg.size_; ++index)
-		elements_[index] = arg.elements_[index];
+	for (size_t index = 0; index < v.size_; ++index)
+		elements_[index] = v.elements_[index];
 }
 
 template<class T>
-inline Vector<T>& Vector<T>::operator=(const Vector<T>& a)
+inline Vector<T>& Vector<T>::operator=(const Vector<T>& v)
 {
-	if (this == &a) return *this;	// Self-assingment not work needed
+	if (this == &v) return *this;	// Self-assingment not work needed
 
 									// Current Vector has enough space, so there is no need for new allocation
-	if (a.size_ <= space_)
+	if (v.size_ <= space_)
 	{
-		for (size_t index = 0; index < a.size_; ++index)
+		for (size_t index = 0; index < v.size_; ++index)
 		{
-			elements_[index] = a.elements_[index];
-			size_ = a.size_;
+			elements_[index] = v.elements_[index];
+			size_ = v.size_;
 			return *this;
 		}
 	}
 
-	T* p = new T[a.size_];
+	T* p = new T[v.size_];
 
-	for (size_t index = 0; index < a.size_; ++index)
-		p[index] = a.elements_[index];
+	for (size_t index = 0; index < v.size_; ++index)
+		p[index] = v.elements_[index];
 
 	delete[] elements_;
-	size_ = a.size_;
-	space_ = a.size_;
+	size_ = v.size_;
+	space_ = v.size_;
 	elements_ = p;
 	return *this;
 }
@@ -487,7 +487,7 @@ inline bool Vector<T>::operator==(const Vector<T>& v)
 		return false;
 	}
 
-	for (int index = 0; index < size_; ++index)
+	for (size_t index = 0; index < size_; ++index)
 	{
 		if (elements_[index] != v[index])
 		{

@@ -236,11 +236,11 @@ inline String<T>::String(size_t size)
 
 
 template<class T>
-inline String<T>::String(const String & arg)
-	:size_(arg.size_), elements_(new T[arg.size_])
+inline String<T>::String(const String & v)
+	:size_(v.size_), elements_(new T[v.size_]), space_(v.size_)
 {
-	for (size_t index = 0; index < arg.size_; ++index)
-		elements_[index] = arg.elements_[index];
+	for (size_t index = 0; index < v.size_; ++index)
+		elements_[index] = v.elements_[index];
 }
 
 template<class T>
