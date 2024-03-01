@@ -165,7 +165,13 @@ public:
 	// Overloading the equal operator
 	bool operator==(const String<T>&);
 
-	// Overloading the equal operator
+	// Overloading the unequal operator
+	bool operator!=(const Vector<T>&);
+
+	// Overloading the greater operator
+	bool operator>(const String<T>&);
+
+	// Overloading the smaller operator
 	bool operator>(const String<T>&);
 
 	/*----------------------------*/
@@ -236,11 +242,11 @@ inline String<T>::String(size_t size)
 
 
 template<class T>
-inline String<T>::String(const String & v)
-	:size_(v.size_), elements_(new T[v.size_]), space_(v.size_)
+inline String<T>::String(const String & str)
+	:size_(str.size_), elements_(new T[str.size_]), space_(str.size_)
 {
-	for (size_t index = 0; index < v.size_; ++index)
-		elements_[index] = v.elements_[index];
+	for (size_t index = 0; index < str.size_; ++index)
+		elements_[index] = str.elements_[index];
 }
 
 template<class T>

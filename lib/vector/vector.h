@@ -151,6 +151,9 @@ public:
 	// Overloading the equal operator
 	bool operator==(const Vector<T>&);
 
+	// Overloading the unequal operator
+	bool operator!=(const Vector<T>&);
+
 	/*----------------------------*/
 
 
@@ -496,5 +499,24 @@ inline bool Vector<T>::operator==(const Vector<T>& v)
 	}
 
 	return true;
+}
+
+template<class T>
+inline bool Vector<T>::operator!=(const Vector<T>& v)
+{
+	if (size_ != v.Size())
+	{
+		return true;
+	}
+
+	for (size_t index = 0; index < size_; ++index)
+	{
+		if (elements_[index] != v[index])
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
