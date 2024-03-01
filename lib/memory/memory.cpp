@@ -1,9 +1,11 @@
 #include "memory.h"
 
-void* operator new(size_t size)
+#include <iostream>
+
+void* operator new(size_t n)
 {
     void* p;
-    while ((p = krnl_std::Alloc(size)) == 0);
+    while ((p = krnl_std::Alloc(n)) == 0);
     return (p);
 }
 
@@ -12,13 +14,23 @@ void operator delete(void* p, size_t n)
     krnl_std::Free(p);
 }
 
+void operator delete[](void* p)
+{
+    if(p==nullptr)
+    {
+        return;
+    }
+    krnl_std::Free(p);
+}
+
+
 namespace krnl_std
 {
     void* Alloc(size_t n)
     {
         void* p;
 
-        #ifdef _DEBUG
+        #ifdef DEBUG
         p = (void*)malloc(n);
         #else
 
@@ -29,7 +41,7 @@ namespace krnl_std
 
     void Free(void* p)
     {
-        #ifdef _DEBUG
+        #ifdef DEBUG
 
         return free(p);
 
@@ -41,7 +53,7 @@ namespace krnl_std
 
     void MemCopy(void* dst, void* src, size_t len)
     {
-        #ifdef _DEBUG
+        #ifdef DEBUG
             memcpy(dst, src, len);
         #else
             RtlCopyMemory(dst, src, len);

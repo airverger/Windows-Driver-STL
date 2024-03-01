@@ -64,5 +64,4 @@ namespace krnl_std
         void Deallocate();
         bool Copy(T* src, size_t pos, size_t size);
     };
-
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "memory/memory.h"
+
 struct out_of_range
 {
 
@@ -34,17 +36,17 @@ public:
 
 	class iterator;
 
-	iterator begin();
+	iterator Begin();
 
-	const iterator begin() const;
+	const iterator Begin() const;
 
-	iterator end();
+	iterator End();
 	
-	const iterator end() const;
+	const iterator End() const;
 
-	const iterator cbegin() const;
+	const iterator ConstBegin() const;
 
-	const iterator cend() const;
+	const iterator ConstEnd() const;
 
 	/*----------------------------*/
 
@@ -54,28 +56,28 @@ public:
 
 	/* -------- CAPACITY -------- */
 
-	bool empty() const;
+	bool Empty() const;
 
 	// Returns size of allocated storate capacity
-	size_t capacity() const;
+	size_t Capacity() const;
 
 	// Requests a change in capacity
 	// reserve() will never decrase the capacity.
-	void reserve(size_t newmalloc);
+	void Reserve(size_t new_size);
 
 	// Changes the Vector's size.
 	// If the newsize is smaller, the last elements will be lost.
 	// Has a default value param for custom values when resizing.
-	void resize(size_t newsize, T val = T());
+	void Resize(size_t new_size, T val = T());
 
 	// Returns the size of the Vector (number of elements). 
-	size_t size() const;
+	size_t Size() const;
 
 	// Returns the maximum number of elements the Vector can hold
-	size_t max_size() const;
+	size_t MaxSize() const;
 
 	// Reduces capcity to fit the size
-	void shrink_to_fit();
+	void ShrinkToFit();
 
 	/*----------------------------*/
 
@@ -87,13 +89,16 @@ public:
 
 	// Removes all elements from the Vector
 	// Capacity is not changed.
-	void clear();
+	void Clear();
 
 	// Inserts element at the back
-	void push_back(const T& d);
+	void PushBack(const T& d);
 
 	// Removes the last element from the Vector
-	void pop_back();
+	void PopBack();
+
+	// Append a vector.
+	void Append(const Vector<T>& v);
 
 	/*----------------------------*/
 
@@ -104,10 +109,10 @@ public:
 	/* ----- ELEMENT ACCESS ----- */
 
 	// Access elements with bounds checking
-	T& at(size_t n);
+	T& At(size_t n);
 
 	// Access elements with bounds checking for constant Vectors.
-	const T& at(size_t n) const;
+	const T& At(size_t n) const;
 
 	// Access elements, no bounds checking
 	T& operator[](size_t i);
@@ -116,29 +121,29 @@ public:
 	const T& operator[](size_t i) const;
 
 	// Returns a reference to the first element
-	T& front();
+	T& Front();
 
 	// Returns a reference to the first element
-	const T& front() const;
+	const T& Front() const;
 
 	// Returns a reference to the last element
-	T& back();
+	T& Back();
 
 	// Returns a reference to the last element
-	const T& back() const;
+	const T& Back() const;
 
 	// Returns a posize_ter to the array used by Vector
-	T* data();
+	T* Data();
 
 	// Returns a posize_ter to the array used by Vector
-	const T* data() const;
+	const T* Data() const;
 
 	/*----------------------------*/
 
 private:
-	size_t	_size;		// Number of elements in Vector
-	T*		_elements;	// Posize_ter to first element of Vector
-	size_t	_space;		// Total space used by Vector including
+	size_t	size_;		// Number of elements in Vector
+	T*		elements_;	// Posize_ter to first element of Vector
+	size_t	space_;		// Total space used by Vector including
 						// elements and free space.
 };
 
@@ -148,64 +153,64 @@ template<class T> class Vector<T>::iterator
 {
 public:
 	iterator(T* p)
-		:_curr(p)
+		:curr_(p)
 	{}
 
 	iterator& operator++()
 	{
-		_curr++;
+		curr_++;
 		return *this;
 	}
 
 	iterator& operator--()
 	{
-		_curr--;
+		curr_--;
 		return *this;
 	}
 
 	T& operator*()
 	{
-		return *_curr;
+		return *curr_;
 	}
 
 	bool operator==(const iterator& b) const
 	{
-		return *_curr == *b._curr;
+		return *curr_ == *b.curr_;
 	}
 
 	bool operator!=(const iterator& b) const
 	{
-		return *_curr != *b._curr;
+		return *curr_ != *b.curr_;
 	}
 
 private:
-	T* _curr;
+	T* curr_;
 };
 
 
 
 // Constructors/Destructor
 template<class T>
-Vector<T>::Vector()
-	:_size(0), _elements(0), _space(0)
+inline Vector<T>::Vector()
+	:size_(0), elements_(0), space_(0)
 {}
 
 
 template<class T>
 inline Vector<T>::Vector(size_t s)
-	:_size(s), _elements(new T[s]), _space(s)
+	:size_(s), elements_(new T[s]), space_(s)
 {
-	for (size_t index = 0; index < _size; ++index)
-		_elements[index] = T();
+	for (size_t index = 0; index < size_; ++index)
+		elements_[index] = T();
 }
 
 
 template<class T>
 inline Vector<T>::Vector(const Vector & arg)
-	:_size(arg._size), _elements(new T[arg._size])
+	:size_(arg.size_), elements_(new T[arg.size_])
 {
-	for (size_t index = 0; index < arg._size; ++index)
-		_elements[index] = arg._elements[index];
+	for (size_t index = 0; index < arg.size_; ++index)
+		elements_[index] = arg.elements_[index];
 }
 
 template<class T>
@@ -214,200 +219,221 @@ inline Vector<T>& Vector<T>::operator=(const Vector<T>& a)
 	if (this == &a) return *this;	// Self-assingment not work needed
 
 									// Current Vector has enough space, so there is no need for new allocation
-	if (a._size <= _space)
+	if (a.size_ <= space_)
 	{
-		for (size_t index = 0; index < a._size; ++index)
+		for (size_t index = 0; index < a.size_; ++index)
 		{
-			_elements[index] = a._elements[index];
-			_size = a._size;
+			elements_[index] = a.elements_[index];
+			size_ = a.size_;
 			return *this;
 		}
 	}
 
-	T* p = new T[a._size];
+	T* p = new T[a.size_];
 
-	for (size_t index = 0; index < a._size; ++index)
-		p[index] = a._elements[index];
+	for (size_t index = 0; index < a.size_; ++index)
+		p[index] = a.elements_[index];
 
-	delete[] _elements;
-	_size = a._size;
-	_space = a._size;
-	_elements = p;
+	delete[] elements_;
+	size_ = a.size_;
+	space_ = a.size_;
+	elements_ = p;
 	return *this;
 }
 
 template<class T>
 Vector<T>::~Vector()
 {
-	delete[] _elements;
+	delete[] elements_;
 }
 
 
 
 // Iterators
 template<class T>
-inline typename Vector<T>::iterator Vector<T>::begin()
+inline typename Vector<T>::iterator Vector<T>::Begin()
 {	
-	return Vector<T>::iterator(&_elements[0]);
+	return Vector<T>::iterator(&elements_[0]);
 }
 
 template<class T>
-inline const Vector<T>::iterator Vector<T>::begin() const
+inline const Vector<T>::iterator Vector<T>::Begin() const
 {
-	return Vector<T>::iterator(&_elements[0]);
+	return Vector<T>::iterator(&elements_[0]);
 }
 
 template<class T>
-inline Vector<T>::iterator Vector<T>::end()
+inline Vector<T>::iterator Vector<T>::End()
 {
-	return Vector<T>::iterator(&_elements[_size]);
+	return Vector<T>::iterator(&elements_[size_]);
 }
 
 template<class T>
-inline const Vector<T>::iterator Vector<T>::end() const
+inline const Vector<T>::iterator Vector<T>::End() const
 {
-	return Vector<T>::iterator(&_elements[_size]);
+	return Vector<T>::iterator(&elements_[size_]);
 }
 
 template<class T>
-inline const Vector<T>::iterator Vector<T>::cbegin() const
+inline const Vector<T>::iterator Vector<T>::ConstBegin() const
 {
-	return Vector<T>::iterator(&_elements[0]);
+	return Vector<T>::iterator(&elements_[0]);
 }
 
 template<class T>
-inline const Vector<T>::iterator Vector<T>::cend() const
+inline const Vector<T>::iterator Vector<T>::ConstEnd() const
 {
-	return Vector<T>::iterator(&_elements[_size]);
+	return Vector<T>::iterator(&elements_[size_]);
 }
 
 
 
 // Capacity
 template<class T>
-inline bool Vector<T>::empty() const
+inline bool Vector<T>::Empty() const
 {
-	return (_size == 0);
+	return (size_ == 0);
 }
 
 template<class T>
-inline size_t Vector<T>::capacity() const
+inline size_t Vector<T>::Capacity() const
 {
-	return _space;
+	return space_;
 }
 
 template<class T>
-inline void Vector<T>::reserve(size_t newalloc)
+inline void Vector<T>::Reserve(size_t new_size)
 {
-	if (newalloc <= _space) return;
+	if (new_size <= space_) return;
 
-	T* p = new T[newalloc];
+	T* p = new T[new_size];
 
-	for (size_t i = 0; i < _size; ++i)
-		p[i] = _elements[i];
+	for (size_t i = 0; i < size_; ++i)
+		p[i] = elements_[i];
 
-	delete[] _elements;
+	delete[] elements_;
 
-	_elements = p;
+	elements_ = p;
 
-	_space = newalloc;
+	space_ = new_size;
 }
 
 template<class T>
-inline void Vector<T>::resize(size_t newsize, T val)
+inline void Vector<T>::Resize(size_t new_size, T val)
 {
-	reserve(newsize);
+	Reserve(new_size);
 
-	for (size_t index = _size; index < newsize; ++index)
-		_elements[index] = T();
+	for (size_t index = size_; index < new_size; ++index)
+		elements_[index] = T();
 
-	_size = newsize;
+	size_ = new_size;
 }
 
 template<class T>
-inline size_t Vector<T>::size() const
+inline size_t Vector<T>::Size() const
 {
-	return _size;
+	return size_;
 }
 
 
+
+template<class T>
+inline void Vector<T>::Clear()
+{
+	for (size_t index = 0; index < size_; ++index)
+		elements_[index] = T();
+	space_ += size_ * sizeof(T);
+	size_ = 0;
+}
 
 // Modifiers
 template<class T>
-inline void Vector<T>::push_back(const T& d)
+inline void Vector<T>::PushBack(const T& d)
 {
-	if (_space == 0)
-		reserve(8);
-	else if (_size == _space)
-		reserve(2 * _space);
+	if (space_ == 0)
+		Reserve(8);
+	else if (size_ == space_)
+		Reserve(2 * space_);
 
-	_elements[_size] = d;
+	elements_[size_] = d;
 
-	++_size;
+	++size_;
+}
+
+template<class T>
+inline void Vector<T>::Append(const Vector<T>& v)
+{
+	Reserve(max(v.Size(), size_)*2);
+
+	for (size_t index = 0; index < v.Size(); ++index)
+		elements_[index + size_] = v[index];
+
+	size_ += v.Size();
+
 }
 
 
 
 // Accessors
 template<class T>
-inline T & Vector<T>::at(size_t n)
+inline T & Vector<T>::At(size_t n)
 {
-	if (n < 0 || _size <= n) throw out_of_range();
-	return _elements[n];
+	if (n < 0 || size_ <= n) throw out_of_range();
+	return elements_[n];
 }
 
 template<class T>
-inline const T & Vector<T>::at(size_t n) const
+inline const T & Vector<T>::At(size_t n) const
 {
-	if (n < 0 || _size <= n) throw out_of_range();
-	return _elements[n];
+	if (n < 0 || size_ <= n) throw out_of_range();
+	return elements_[n];
 }
 
 template<class T>
 inline T & Vector<T>::operator[](size_t i)
 {
-	return _elements[i];
+	return elements_[i];
 }
 
 template<class T>
 inline const T & Vector<T>::operator[](size_t i) const
 {
-	return _elements[i];
+	return elements_[i];
 }
 
 template<class T>
-inline T& Vector<T>::front()
+inline T& Vector<T>::Front()
 {
-	return _elements[0];
+	return elements_[0];
 }
 
 template<class T>
-inline const T& Vector<T>::front() const
+inline const T& Vector<T>::Front() const
 {
-	return _elements[0];
+	return elements_[0];
 }
 
 template<class T>
-inline T& Vector<T>::back()
+inline T& Vector<T>::Back()
 {
-	return _elements[_size - 1];
+	return elements_[size_ - 1];
 }
 
 template<class T>
-inline const T& Vector<T>::back() const
+inline const T& Vector<T>::Back() const
 {
-	return _elements[_size - 1];
+	return elements_[size_ - 1];
 }
 
 template<class T>
-inline T* Vector<T>::data()
+inline T* Vector<T>::Data()
 {
-	return _elements;
+	return elements_;
 }
 
 template<class T>
-inline const T* Vector<T>::data() const
+inline const T* Vector<T>::Data() const
 {
-	return _elements;
+	return elements_;
 }
 

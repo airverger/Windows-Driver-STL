@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "windowsSdkVersion": "10.0.22621.0",
+            "intelliSenseMode": "windows-msvc-x64",
+            "defines":[
+                "DEBUG"
+            ]
+        }
+    ],
+    "version": 4
+}

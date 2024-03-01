@@ -1,13 +1,17 @@
 #pragma once
 
+typedef unsigned long long size_t;
+
+extern void* operator new(size_t);
+
+extern void operator delete(void*, size_t);
+
+extern void operator delete[](void*);
+
+#define DEBUG
+#ifdef DEBUG
+
 #include <stdlib.h>
-
-void* operator new(size_t size);
-
-void operator delete(void* p, size_t n);
-
-#ifdef _DEBUG
-
 #include <format>
 
 #else
@@ -17,6 +21,9 @@ void operator delete(void* p, size_t n);
 #include <Ntifs.h>
 
 #endif
+
+#define max(X, Y) (((X) > (Y)) ? (X) : (Y))
+#define min(X, Y) (((X) < (Y)) ? (X) : (Y))
 
 namespace krnl_std
 {
