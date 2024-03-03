@@ -35,6 +35,10 @@ namespace krnl_std
 
     void Free(void* p)
     {
+        if (p == nullptr)
+        {
+            return;
+        }
     #ifdef TEST
         return free(p);
     #else

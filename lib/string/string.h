@@ -180,9 +180,9 @@ protected:
 	void Deallocate();
 
 private:
-	size_t	size_;		// Number of elements in String
-	T* elements_;	// Posize_ter to first element of String
-	size_t	space_;		// Total space used by String including
+	size_t	size_ = 0;		// Number of elements in String
+	T* elements_ = nullptr;	// Posize_ter to first element of String
+	size_t	space_ = 0;		// Total space used by String including
 						// elements and free space.
 };
 
@@ -232,7 +232,7 @@ private:
 // Constructors/Destructor
 template<class T>
 inline String<T>::String()
-	:size_(0), elements_(0), space_(0)
+	:size_(0), elements_(nullptr), space_(0)
 {}
 
 
@@ -602,5 +602,10 @@ inline T* String<T>::Allocate(size_t n)
 template<class T>
 inline void String<T>::Deallocate()
 {
+	if (elements_ == nullptr)
+	{
+		return;
+	}
 	krnl_std::Free(elements_);
+	elements_ = 0;
 }
