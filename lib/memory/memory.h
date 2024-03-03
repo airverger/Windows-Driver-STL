@@ -2,17 +2,12 @@
 
 typedef unsigned long long size_t;
 
-extern void* operator new(size_t);
-
-extern void operator delete(void*, size_t);
-
-extern void operator delete[](void*);
-
-#define DEBUG
-#ifdef DEBUG
+#define TEST
+#ifdef TEST
 
 #include <stdlib.h>
 #include <format>
+#include <iostream>
 
 #else
 
@@ -25,14 +20,14 @@ extern void operator delete[](void*);
 #define max(X, Y) (((X) > (Y)) ? (X) : (Y))
 #define min(X, Y) (((X) < (Y)) ? (X) : (Y))
 
+void MemCopy(void* dst, void* src, size_t len);
+
+template <class T>
+void ZeroMemory(T* dst, size_t len);
+
 namespace krnl_std
 {
     void* Alloc(size_t n);
 
     void Free(void* p);
-
-    void MemCopy(void* dst, void* src, size_t len);
-
-    void ZeroMemory(void* dst, size_t len);
-
 }

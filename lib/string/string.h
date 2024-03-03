@@ -1,6 +1,6 @@
 #pragma once
 
-#include "memory/memory.h"
+#include "memory.h"
 
 struct out_of_range
 {
@@ -43,7 +43,7 @@ public:
 	const iterator Begin() const;
 
 	iterator End();
-	
+
 	const iterator End() const;
 
 	const iterator ConstBegin() const;
@@ -181,7 +181,7 @@ protected:
 
 private:
 	size_t	size_;		// Number of elements in String
-	T*		elements_;	// Posize_ter to first element of String
+	T* elements_;	// Posize_ter to first element of String
 	size_t	space_;		// Total space used by String including
 						// elements and free space.
 };
@@ -238,7 +238,7 @@ inline String<T>::String()
 
 template<class T>
 inline String<T>::String(size_t size)
-	:size_(size), elements_(Allocate(size)), space_(size)
+	: size_(size), elements_(Allocate(size)), space_(size)
 {
 	for (size_t index = 0; index < size_; ++index)
 		elements_[index] = T();
@@ -246,7 +246,7 @@ inline String<T>::String(size_t size)
 
 
 template<class T>
-inline String<T>::String(const String & str)
+inline String<T>::String(const String& str)
 	:size_(str.size_), elements_(Allocate(str.size_)), space_(str.size_)
 {
 	for (size_t index = 0; index < str.size_; ++index)
@@ -298,7 +298,7 @@ inline String<T>& String<T>::operator=(const String<T>& str)
 }
 
 template<class T>
-inline String<T>& String<T>::operator=(const T * cstr)
+inline String<T>& String<T>::operator=(const T* cstr)
 {
 	size_t cstr_size = 0;
 	for (; cstr[cstr_size] != T(); ++cstr_size);
@@ -340,7 +340,7 @@ String<T>::~String()
 // Iterators
 template<class T>
 inline typename String<T>::iterator String<T>::Begin()
-{	
+{
 	return String<T>::iterator(&elements_[0]);
 }
 
@@ -492,27 +492,27 @@ inline String<T> String<T>::operator+(const String<T>& str)
 
 // Accessors
 template<class T>
-inline T & String<T>::At(size_t n)
+inline T& String<T>::At(size_t n)
 {
 	if (n < 0 || size_ <= n) throw out_of_range();
 	return elements_[n];
 }
 
 template<class T>
-inline const T & String<T>::At(size_t n) const
+inline const T& String<T>::At(size_t n) const
 {
 	if (n < 0 || size_ <= n) throw out_of_range();
 	return elements_[n];
 }
 
 template<class T>
-inline T & String<T>::operator[](size_t i)
+inline T& String<T>::operator[](size_t i)
 {
 	return elements_[i];
 }
 
 template<class T>
-inline const T & String<T>::operator[](size_t i) const
+inline const T& String<T>::operator[](size_t i) const
 {
 	return elements_[i];
 }
@@ -594,7 +594,7 @@ inline bool String<T>::IsSuffixOf(const String<T>& str)
 template<class T>
 inline T* String<T>::Allocate(size_t n)
 {
-	T* p = new T[n + 1];
+	T* p = (T *)krnl_std::Alloc( (n + 1) * sizeof(T));
 	p[n] = T();
 	return p;
 }
@@ -602,5 +602,5 @@ inline T* String<T>::Allocate(size_t n)
 template<class T>
 inline void String<T>::Deallocate()
 {
-	delete[] elements_;
+	krnl_std::Free(elements_);
 }

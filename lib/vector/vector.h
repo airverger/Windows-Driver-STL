@@ -156,6 +156,10 @@ public:
 
 	/*----------------------------*/
 
+protected:
+	T* Allocate(size_t);
+	void Deallocate();
+	
 
 private:
 	size_t	size_;		// Number of elements in Vector
@@ -215,7 +219,7 @@ inline Vector<T>::Vector()
 
 template<class T>
 inline Vector<T>::Vector(size_t s)
-	:size_(s), elements_(new T[s]), space_(s)
+	:size_(s), elements_(Allocate(s)), space_(s)
 {
 	for (size_t index = 0; index < size_; ++index)
 		elements_[index] = T();
@@ -224,7 +228,7 @@ inline Vector<T>::Vector(size_t s)
 
 template<class T>
 inline Vector<T>::Vector(const Vector & v)
-	:size_(v.size_), elements_(new T[v.size_]), space_(v.size_)
+	:size_(v.size_), elements_(Allocate(v.size_)), space_(v.size_)
 {
 	for (size_t index = 0; index < v.size_; ++index)
 		elements_[index] = v.elements_[index];
@@ -246,7 +250,7 @@ inline Vector<T>& Vector<T>::operator=(const Vector<T>& v)
 		}
 	}
 
-	T* p = new T[v.size_];
+	T* p = Allocate(v.size_);
 
 	for (size_t index = 0; index < v.size_; ++index)
 		p[index] = v.elements_[index];
@@ -323,7 +327,7 @@ inline void Vector<T>::Reserve(size_t new_size)
 {
 	if (new_size <= space_) return;
 
-	T* p = new T[new_size];
+	T* p = Allocate(new_size);
 
 	for (size_t i = 0; i < size_; ++i)
 		p[i] = elements_[i];
@@ -520,3 +524,16 @@ inline bool Vector<T>::operator!=(const Vector<T>& v)
 	return false;
 }
 
+template<class T>
+inline T* Vector<T>::Allocate(size_t n)
+{
+	T* p = (T *)krnl_std::Alloc( (n + 1) * sizeof(T));
+	p[n] = T();
+	return p;
+}
+
+template<class T>
+inline void Vector<T>::Deallocate()
+{
+	krnl_std::Free(elements_);
+}
