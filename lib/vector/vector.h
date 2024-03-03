@@ -527,13 +527,18 @@ inline bool Vector<T>::operator!=(const Vector<T>& v)
 template<class T>
 inline T* Vector<T>::Allocate(size_t n)
 {
-	T* p = (T *)krnl_std::Alloc( (n + 1) * sizeof(T));
-	p[n] = T();
+	T* p = (T *)krnl_std::Alloc(n * sizeof(T));
 	return p;
 }
 
 template<class T>
 inline void Vector<T>::Deallocate()
 {
+	if (elements_ == nullptr)
+	{
+		return;
+	}
+
 	krnl_std::Free(elements_);
+	elements_;
 }
