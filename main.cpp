@@ -1,10 +1,13 @@
-#include "vector/vector.h"
+// #include "vector/vector.h"
 
+#include <Windows.h>
 #include <iostream>
+#include <string>
 using namespace std;
 
 int main()
 {
+    /*
     Vector<int> a;
     Vector<int> b;
     Vector<int> c;
@@ -36,5 +39,26 @@ int main()
     }
 
     cout << (c != a) << endl;
+    */
 
+    string s = "aaaaa";
+
+    string s;
+    s.resize(1000);
+    if (GetVolumePathNameA("E:\\Code\\Github\\WinDrv-Cpp-Libs", s.data(), 1000))
+    {
+        cout << s << endl;
+        s.resize(strlen(s.data()));
+        if (s[s.size()-1] == '\\')
+        {
+            s.pop_back();
+        }
+        string ans;
+        ans.resize(1000);
+        if (QueryDosDeviceA(s.data(), ans.data(), ans.size()) != 0)
+        {
+            cout << ans << endl;
+        }
+    }
+    
 }

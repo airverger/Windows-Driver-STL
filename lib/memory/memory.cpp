@@ -31,22 +31,20 @@ namespace krnl_std
         void* p;
 
         #ifdef DEBUG
-        p = (void*)malloc(n);
+            p = (void*)malloc(n);
         #else
-
+            p = ExAllocatePool2(POOL_FLAG_NON_PAGED, n, 0x22042003)
         #endif
-        ZeroMemory(p, n);
+        // ZeroMemory(p, n);
         return p;
     }
 
     void Free(void* p)
     {
         #ifdef DEBUG
-
-        return free(p);
-
+            return free(p);
         #else
-
+            return ExFreePool(p);
         #endif
 
     }

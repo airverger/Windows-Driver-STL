@@ -18,10 +18,10 @@ public:
 	explicit Vector(size_t s);
 
 	// Copy constructor
-	Vector(const Vector& arg);
+	Vector(const Vector&);
 
 	// Copy Assingment
-	Vector<T>& operator=(const Vector<T>& arg);
+	Vector<T>& operator=(const Vector<T>&);
 
 	// Destructor
 	~Vector();
@@ -359,7 +359,7 @@ inline void Vector<T>::Clear()
 {
 	for (size_t index = 0; index < size_; ++index)
 		elements_[index] = T();
-	space_ += size_ * sizeof(T);
+	space_ += size_;
 	size_ = 0;
 }
 

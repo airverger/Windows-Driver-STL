@@ -11,7 +11,7 @@
                 "${workspaceFolder}\\lib",
                 "-g",
                 "${workspaceFolder}\\${fileBasenameNoExtension}.cpp",
-                "${workspaceFolder}\\lib\\memory\\memory.cpp",
+                //"${workspaceFolder}\\lib\\memory\\memory.cpp",
                 "-o",
                 "${workspaceFolder}\\release\\x64\\Windows\\${fileBasenameNoExtension}.exe"
             ],
