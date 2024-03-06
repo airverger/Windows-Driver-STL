@@ -484,9 +484,7 @@ inline String<T> String<T>::operator+(const String<T>& str)
 	{
 		res[index + size_] = str[index];
 	}
-
 	return res;
-
 }
 
 
