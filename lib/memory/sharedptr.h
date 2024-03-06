@@ -2,6 +2,8 @@
 
 #include "memory.h"
 
+// TODO : test if new and delete can be used in kernel
+
 template <typename T>
 class SharedPtr {
 public:
