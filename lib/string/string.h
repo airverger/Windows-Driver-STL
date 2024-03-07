@@ -2,11 +2,6 @@
 
 #include "../memory/memory.h"
 
-struct out_of_range
-{
-
-};
-
 template<class T> class String
 {
 public:
@@ -492,14 +487,12 @@ inline String<T> String<T>::operator+(const String<T>& str)
 template<class T>
 inline T& String<T>::At(size_t n)
 {
-	if (n < 0 || size_ <= n) throw out_of_range();
 	return elements_[n];
 }
 
 template<class T>
 inline const T& String<T>::At(size_t n) const
 {
-	if (n < 0 || size_ <= n) throw out_of_range();
 	return elements_[n];
 }
 

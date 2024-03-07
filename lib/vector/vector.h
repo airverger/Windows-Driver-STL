@@ -2,11 +2,6 @@
 
 #include "../memory/memory.h"
 
-struct out_of_range
-{
-
-};
-
 template<class T> class Vector
 {
 public:
@@ -427,14 +422,12 @@ inline Vector<T> Vector<T>::operator+(const Vector<T>& v)
 template<class T>
 inline T & Vector<T>::At(size_t n)
 {
-	if (n < 0 || size_ <= n) throw out_of_range();
 	return elements_[n];
 }
 
 template<class T>
 inline const T & Vector<T>::At(size_t n) const
 {
-	if (n < 0 || size_ <= n) throw out_of_range();
 	return elements_[n];
 }
 
