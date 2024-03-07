@@ -2,7 +2,7 @@
 
 #include "../memory/memory.h"
 
-template<class T> class Vector
+template<typename T> class Vector
 {
 public:
 	/* ----- Constructors ----- */

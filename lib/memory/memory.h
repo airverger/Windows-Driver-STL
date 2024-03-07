@@ -2,6 +2,8 @@
 
 typedef unsigned long long size_t;
 
+#include <ntifs.h>
+#include <ntdef.h>
 #include <wdm.h>
 
 #pragma warning(disable:4100)
