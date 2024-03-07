@@ -1,6 +1,6 @@
 #pragma once
 
-#include "memory.h"
+#include "memory/memory.h"
 
 template <typename T>
 class SharedPtr {
