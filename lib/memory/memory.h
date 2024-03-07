@@ -3,8 +3,6 @@
 typedef unsigned long long size_t;
 
 #include <wdm.h>
-#include <Ntifs.h>
-#include <Ntddk.h>
 
 #define max(X, Y) (((X) > (Y)) ? (X) : (Y))
 #define min(X, Y) (((X) < (Y)) ? (X) : (Y))
