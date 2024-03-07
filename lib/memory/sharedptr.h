@@ -1,6 +1,6 @@
 #pragma once
 
-#include "memory/memory.h"
+#include "memory.h"
 
 // TODO : test if new and delete can be used in kernel
 

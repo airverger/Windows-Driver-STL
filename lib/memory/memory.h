@@ -4,6 +4,8 @@ typedef unsigned long long size_t;
 
 #include <wdm.h>
 
+#pragma warning(disable:4100)
+
 #define max(X, Y) (((X) > (Y)) ? (X) : (Y))
 #define min(X, Y) (((X) < (Y)) ? (X) : (Y))
 
@@ -24,27 +26,6 @@ namespace krnl_std
 
     void Free(void* p);
 
-}
-
-inline void* operator new(size_t n)
-{
-    void* p;
-    while ((p = krnl_std::Alloc(n)) == 0);
-    return (p);
-}
-
-inline void operator delete(void* p, size_t n)
-{
-    krnl_std::Free(p);
-}
-
-inline void operator delete[](void* p)
-{
-    if (p == nullptr)
-    {
-        return;
-    }
-    krnl_std::Free(p);
 }
 
 inline void MemCopy(void* dst, void* src, size_t len)
