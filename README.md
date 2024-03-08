@@ -1,1 +1,1 @@
-# A C++ Standard Template Libraries for Windows Kernel Driver
+# C++ Standard Template Libraries for Windows Kernel Driver
