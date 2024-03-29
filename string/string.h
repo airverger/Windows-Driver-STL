@@ -16,10 +16,14 @@ public:
 	String(const String&);
 	String(const T*);
 
+	String(const UNICODE_STRING&);
+
 	// Copy Assingment
 	String<T>& operator=(const String<T>&);
 
 	String<T>& operator=(const T*);
+
+	String<T>& operator=(const PUNICODE_STRING&);
 
 	// Destructor
 	~String();
@@ -262,6 +266,26 @@ inline String<T>::String(const T* cstr)
 		elements_[index] = cstr[index];
 }
 
+template<>
+inline String<WCHAR>::String(const UNICODE_STRING& uni_str)
+	:size_(uni_str.Length / sizeof(WCHAR)), elements_(Allocate(uni_str.MaximumLength / sizeof(WCHAR))), space_(uni_str.MaximumLength / sizeof(WCHAR))
+{
+	MemCopy(elements_, uni_str.Buffer, uni_str.Length);
+	elements_[uni_str.Length] = 0;
+}
+
+template<>
+inline String<char>::String(const UNICODE_STRING& uni_str)
+	:size_(uni_str.Length / sizeof(WCHAR)), elements_(Allocate(uni_str.MaximumLength / sizeof(WCHAR))), space_(uni_str.MaximumLength / sizeof(WCHAR))
+{
+	for (int i = 0; i < uni_str.Length; i++)
+	{
+		elements_[i] = (char)uni_str.Buffer[i];
+	}
+	elements_[uni_str.Length] = 0;
+}
+
+
 template<class T>
 inline String<T>& String<T>::operator=(const String<T>& str)
 {
@@ -322,6 +346,20 @@ inline String<T>& String<T>::operator=(const T* cstr)
 	elements_ = p;
 	return *this;
 
+}
+
+template<>
+inline String<WCHAR>& String<WCHAR>::operator=(const PUNICODE_STRING& uni_str)
+{
+	Deallocate();
+	size_ = uni_str->Length / sizeof(WCHAR);
+	elements_ = Allocate(uni_str->MaximumLength / sizeof(WCHAR));
+	space_ = uni_str->MaximumLength / sizeof(WCHAR);
+
+	MemCopy(elements_, uni_str->Buffer, uni_str->Length);
+	elements_[uni_str->Length] = 0;
+
+	return *this;
 }
 
 template<class T>
@@ -580,6 +618,26 @@ inline bool String<T>::IsSuffixOf(const String<T>& str)
 	}
 
 	return true;
+}
+
+template<class T>
+inline bool String<T>::operator==(const String<T>& str)
+{
+	if (size_ != str.Size())
+	{
+		return false;
+	}
+
+	for (size_t index = 0; index < size_; ++index)
+	{
+		if (elements_[index] != str[index])
+		{
+			return false;
+		}
+	}
+
+	return true;
+
 }
 
 template<class T>
